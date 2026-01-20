@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Manajemen Siswa</title>
+
+    <!-- Google Fonts: Mulish -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Mulish", "sans-serif"],
+            },
+            colors: {
+              primary: "#4f46e5", // Indigo 600 - More professional
+              secondary: "#64748b", // Slate 500
+              accent: "#0ea5e9", // Sky 500
+              neutral: "#0f172a", // Slate 900
+              "base-100": "#ffffff",
+              "base-200": "#f1f5f9",
+            },
+            boxShadow: {
+              xs: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+              sm: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)",
+              md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+            },
+          },
+        },
+        daisyui: {
+          themes: ["light"],
+        },
+      };
+    </script>
+
+    <!-- DaisyUI -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Notyf -->
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <style>
+      /* Custom Notyf Styles - Vibrant & Clean */
+      .notyf__toast {
+        border-radius: 12px !important;
+        box-shadow:
+          0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        padding: 16px 20px 16px 20px !important; /* Extra right padding for close button */
+        max-width: 420px !important;
+        border: 2px solid transparent !important;
+      }
+      .notyf__wrapper {
+        padding: 0 !important;
+      }
+      .notyf__message {
+        font-weight: 600 !important;
+        font-size: 0.9375rem !important;
+        line-height: 1.5 !important;
+      }
+      .notyf__ripple {
+        display: none !important;
+      }
+      .notyf__icon {
+        margin-right: 14px !important;
+        font-size: 24px !important;
+      }
+      /* Success Variant - Vibrant Green */
+      .notyf__toast--success {
+        background: linear-gradient(
+          135deg,
+          #d1fae5 0%,
+          #a7f3d0 100%
+        ) !important;
+        border-color: #10b981 !important;
+      }
+      .notyf__toast--success .notyf__message {
+        color: #065f46 !important;
+      }
+      .notyf__toast--success .notyf__icon {
+        color: #059669 !important;
+      }
+      /* Error Variant - Vibrant Red */
+      .notyf__toast--error {
+        background: linear-gradient(
+          135deg,
+          #fee2e2 0%,
+          #fecaca 100%
+        ) !important;
+        border-color: #ef4444 !important;
+      }
+      .notyf__toast--error .notyf__message {
+        color: #991b1b !important;
+      }
+      .notyf__toast--error .notyf__icon {
+        color: #dc2626 !important;
+      }
+      /* Warning Variant - Vibrant Amber */
+      .notyf__toast--warning {
+        background: linear-gradient(
+          135deg,
+          #fef3c7 0%,
+          #fde68a 100%
+        ) !important;
+        border-color: #f59e0b !important;
+      }
+      .notyf__toast--warning .notyf__message {
+        color: #92400e !important;
+      }
+      .notyf__toast--warning .notyf__icon {
+        color: #d97706 !important;
+      }
+      /* Close Button - Hidden */
+      .notyf__dismiss-btn {
+        display: none !important;
+      }
+
+      body {
+        font-family: "Mulish", sans-serif;
+        background-color: #f8fafc; /* Slate 50 - Clean solid background */
+        color: #1e293b; /* Slate 800 */
+      }
+
+      /* Clean Card Style - Replacing Glassmorphism */
+      .card-clean {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow:
+          0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-clean {
+        font-weight: 500;
+        text-transform: none; /* No UPPERCASE */
+        letter-spacing: normal;
+      }
+
+      .table-header-clean th {
+        background-color: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      /* Enhanced Table Row Styling */
+      table tbody tr {
+        transition: all 0.2s ease;
+      }
+
+      table tbody tr:hover {
+        background-color: #f8fafc !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      /* Avatar Enhancement */
+      table tbody tr img {
+        transition: transform 0.2s ease;
+      }
+
+      table tbody tr:hover img {
+        transform: scale(1.1);
+      }
+
+      .photo-preview {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Custom modal backdrop to be less blurry, more dim */
+      .modal::backdrop,
+      .modal-backdrop {
+        background-color: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(2px);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- Navbar -->
+    <div
+      class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur border-b border-slate-200"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex">
+            <div class="flex-shrink-0 flex items-center">
+              <span class="text-xl font-bold text-[#144576] tracking-tight">
+                <i class="fas fa-graduation-cap mr-2"></i>Sistem Manajemen Siswa
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div
+              class="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200"
+            >
+              <div class="text-right block">
+                <div
+                  class="text-[10px] uppercase tracking-wider text-slate-500 font-bold"
+                  id="currentDay"
+                >
+                  HARI
+                </div>
+                <div
+                  class="text-xs text-slate-900 font-medium"
+                  id="currentDate"
+                >
+                  Tanggal
+                </div>
+              </div>
+              <div
+                class="h-8 w-8 rounded-md bg-white border border-slate-200 flex items-center justify-center text-[#144576] shadow-sm"
+              >
+                <i class="far fa-calendar-alt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+      <!-- Page Header -->
+      <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+          <h2
+            class="text-2xl font-bold leading-7 text-slate-900 sm:truncate sm:text-3xl sm:tracking-tight"
+          >
+            Data Siswa
+          </h2>
+          <p class="mt-1 text-sm text-slate-500">
+            Kelola database siswa dengan mudah dan cepat.
+          </p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0 gap-3">
+          <!-- Stats Summary Inline -->
+          <div
+            id="totalStatsCard"
+            class="hidden md:flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm"
+          >
+            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+            <span class="text-sm text-slate-600 font-medium"
+              >Total:
+              <strong class="text-slate-900" id="totalStudents">0</strong></span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Interaction Area -->
+      <div
+        class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+      >
+        <!-- Toolbar -->
+        <!-- Toolbar -->
+        <div
+          class="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between bg-slate-50/50 gap-4"
+        >
+          <!-- Search -->
+          <div class="relative max-w-sm w-full">
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+              <i class="fas fa-search text-slate-400"></i>
+            </div>
+            <input
+              type="text"
+              id="searchInput"
+              class="block w-full rounded-lg border-2 border-slate-200 bg-white py-2.5 pl-10 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm transition-all hover:border-slate-300"
+              placeholder="Cari nama atau NISN..."
+            />
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2 w-full md:w-auto">
+            <div class="join shadow-sm flex-1 md:flex-none">
+              <button
+                onclick="openImportModal()"
+                class="btn join-item btn-sm bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 font-medium normal-case w-full md:w-auto"
+              >
+                <i
+                  class="fas fa-file-import mr-1.5 text-slate-400 hidden sm:inline-block"
+                ></i>
+                Import
+              </button>
+            </div>
+            <button
+              onclick="openAddModal()"
+              class="btn btn-sm bg-[#144576] hover:bg-[#0f3454] text-white border-transparent font-medium normal-case shadow-sm rounded-lg px-4 flex-1 md:flex-none w-full md:w-auto"
+            >
+              <i class="fas fa-plus mr-1.5 hidden sm:inline-block"></i> Siswa
+              Baru
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Siswa
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  NISN
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Email
+                </th>
+                <th
+                  scope="col"
+                  class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="studentTableBody"
+              class="divide-y divide-slate-200 bg-white"
+            >
+              <!-- Rows will be injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer / Pagination -->
+        <div
+          class="border-t border-slate-200 bg-slate-50 px-4 py-3 sm:px-6 flex items-center justify-between"
+        >
+          <div
+            id="paginationInfoContainer"
+            class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
+          >
+            <div>
+              <p class="text-sm text-slate-600" id="paginationText">
+                Halaman
+                <span class="font-medium" id="currentPageStat">1</span> dari
+                <span class="font-medium" id="totalPagesStat">1</span>
+              </p>
+            </div>
+            <div
+              id="paginationContainer"
+              class="join bg-white shadow-sm rounded-md"
+            >
+              <!-- Pagination buttons by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Student Modal (Clean Style) -->
+    <dialog id="studentModal" class="modal">
+      <div
+        class="modal-box max-w-lg p-0 rounded-xl overflow-hidden shadow-xl bg-white"
+      >
+        <!-- Header -->
+        <div
+          class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"
+        >
+          <div>
+            <h3 class="font-bold text-lg text-slate-900" id="modalTitle">
+              Tambah Siswa
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Isi informasi siswa dengan lengkap.
+            </p>
+          </div>
+          <button
+            class="btn btn-sm btn-circle btn-ghost text-slate-400 hover:text-slate-600"
+            onclick="closeStudentModal()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form id="studentForm" class="p-6 space-y-5">
+          <input type="hidden" id="studentId" value="" />
+
+          <!-- Photo Upload (Left aligned layout this time) -->
+          <div class="flex items-center gap-5">
+            <div class="relative group">
+              <div
+                class="w-20 h-20 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden"
+              >
+                <img
+                  id="photoPreview"
+                  src="/assets/placeholder.svg"
+                  class="w-full h-full object-cover"
+                  onerror="this.src = '/assets/placeholder.svg'"
+                />
+              </div>
+              <div
+                class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                onclick="
+                  openPhotoModal(document.getElementById('photoPreview').src)
+                "
+              >
+                <i class="fas fa-expand text-white"></i>
+              </div>
+            </div>
+            <div>
+              <button
+                type="button"
+                class="btn btn-xs btn-outline border-slate-300 text-slate-600 normal-case mb-1"
+                onclick="document.getElementById('photoInput').click()"
+              >
+                Upload Foto
+              </button>
+              <p class="text-[10px] text-slate-400">Max 2MB. JPG/PNG.</p>
+              <input
+                type="file"
+                id="photoInput"
+                name="photo"
+                accept="image/jpeg,image/png,image/jpg"
+                class="hidden"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1"
+                >NISN <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                id="nisnInput"
+                name="nisn"
+                required
+                maxlength="10"
+                pattern="[0-9]{10}"
+                class="input input-sm input-bordered w-full rounded-md focus:border-[#6BABD5] focus:ring-[#6BABD5] h-10"
+                placeholder="0012345678"
+              />
+              <p id="nisnError" class="text-xs text-red-500 mt-1 hidden"></p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1"
+                >Nama Lengkap <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                id="nameInput"
+                name="name"
+                required
+                class="input input-sm input-bordered w-full rounded-md focus:border-[#6BABD5] focus:ring-[#6BABD5] h-10"
+                placeholder="Contoh: Budi Santoso"
+              />
+              <p id="nameError" class="text-xs text-red-500 mt-1 hidden"></p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1"
+                >Email
+                <span class="text-slate-400 text-xs font-normal"
+                  >(Opsional)</span
+                ></label
+              >
+              <input
+                type="email"
+                id="emailInput"
+                name="email"
+                class="input input-sm input-bordered w-full rounded-md focus:border-[#6BABD5] focus:ring-[#6BABD5] h-10"
+                placeholder="siswa@sekolah.sch.id"
+              />
+              <p id="emailError" class="text-xs text-red-500 mt-1 hidden"></p>
+            </div>
+          </div>
+
+          <div
+            class="pt-4 flex justify-end gap-3 border-t border-slate-50 mt-2"
+          >
+            <button
+              type="button"
+              class="btn btn-clean bg-white border-slate-200 hover:bg-slate-50 text-slate-700"
+              onclick="closeStudentModal()"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              id="submitBtn"
+              class="btn btn-clean bg-[#144576] hover:bg-[#0f3454] text-white border-transparent shadow-sm"
+              onclick="submitStudent()"
+            >
+              Simpan Siswa
+            </button>
+          </div>
+        </form>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
+    <!-- Import Modal (Refined) -->
+    <!-- Import Excel Modal (Clean Style) -->
+    <dialog id="importModal" class="modal">
+      <div
+        class="modal-box max-w-lg p-0 rounded-xl overflow-hidden shadow-xl bg-white"
+      >
+        <!-- Header -->
+        <div
+          class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"
+        >
+          <div>
+            <h3 class="font-bold text-lg text-slate-900">Import Data Siswa</h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Upload file Excel untuk import data massal.
+            </p>
+          </div>
+          <button
+            class="btn btn-sm btn-circle btn-ghost text-slate-400 hover:text-slate-600"
+            onclick="closeImportModal()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-6">
+          <!-- Drag Drop Area -->
+          <div
+            class="relative block w-full rounded-lg border-2 border-dashed border-slate-300 p-8 text-center hover:border-[#6BABD5] focus:outline-none focus:ring-2 focus:ring-[#6BABD5] focus:ring-offset-2 transition-all cursor-pointer bg-slate-50 group"
+            onclick="document.getElementById('importFileInput').click()"
+          >
+            <i
+              class="fas fa-cloud-upload-alt text-3xl text-slate-400 group-hover:text-[#6BABD5] mb-2 transition-colors"
+            ></i>
+            <span class="block text-sm font-semibold text-slate-700"
+              >Klik untuk upload file</span
+            >
+            <span class="block text-xs text-slate-500 mt-1" id="fileNameDisplay"
+              >Format .xlsx atau .xls</span
+            >
+            <input
+              type="file"
+              id="importFileInput"
+              class="hidden"
+              accept=".xlsx,.xls"
+              onchange="
+                document.getElementById('fileNameDisplay').textContent = this
+                  .files[0]
+                  ? this.files[0].name
+                  : 'Format .xlsx atau .xls';
+                this.parentElement.classList.add(
+                  'border-[#6BABD5]',
+                  'bg-blue-50',
+                );
+              "
+            />
+          </div>
+
+          <!-- Info Box with Template Download -->
+          <div class="rounded-lg bg-blue-50 border border-blue-100 p-4">
+            <div class="flex items-start gap-3">
+              <div>
+                <a
+                  href="#"
+                  onclick="
+                    downloadTemplate();
+                    return false;
+                  "
+                  class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1"
+                >
+                  <i class="fas fa-download"></i> Download Template Excel
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-col gap-3">
+            <button
+              type="button"
+              id="importBtn"
+              class="w-full btn bg-green-600 hover:bg-green-700 text-white border-transparent shadow-sm normal-case"
+              onclick="importExcel()"
+            >
+              <i class="fas fa-file-import mr-1.5"></i> Mulai Import
+            </button>
+            <button
+              type="button"
+              class="w-full btn btn-ghost text-slate-500 hover:bg-slate-50 normal-case"
+              onclick="closeImportModal()"
+            >
+              Batalkan
+            </button>
+          </div>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
+    <!-- Delete Confirm Modal (Refined) -->
+    <dialog id="confirmDeleteModal" class="modal">
+      <div
+        class="modal-box w-full max-w-sm p-6 rounded-xl bg-white shadow-xl text-center"
+      >
+        <div
+          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4"
+        >
+          <i class="fas fa-trash-alt text-red-600"></i>
+        </div>
+        <h3 class="text-lg font-medium text-slate-900">Hapus Data Siswa?</h3>
+        <p class="text-sm text-slate-500 mt-2">
+          Anda akan menghapus
+          <strong class="student-name text-slate-800"></strong>. Tindakan ini
+          tidak bisa dibatalkan.
+        </p>
+        <div class="mt-6 flex gap-3 justify-center">
+          <button
+            type="button"
+            class="btn btn-clean bg-white border-slate-300 text-slate-700 hover:bg-slate-50 w-24"
+            onclick="closeDeleteModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn btn-clean bg-red-600 border-transparent text-white hover:bg-red-700 w-24 btn-confirm-delete"
+          >
+            Hapus
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
+    <!-- Import Result Modal (Clean) -->
+    <dialog id="importResultModal" class="modal">
+      <div
+        class="modal-box w-full max-w-2xl p-0 rounded-xl bg-white shadow-xl overflow-hidden"
+      >
+        <div
+          class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"
+        >
+          <h3 class="font-bold text-lg text-slate-900">Hasil Import</h3>
+          <button
+            class="btn btn-sm btn-ghost"
+            onclick="closeImportResultModal()"
+          >
+            Selesai
+          </button>
+        </div>
+        <div id="importResultContent" class="p-6">
+          <!-- Content by JS -->
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
+    <!-- Photo Viewer Modal -->
+    <dialog id="photoModal" class="modal bg-black/95 backdrop-blur-sm">
+      <div
+        class="modal-box max-w-5xl bg-transparent shadow-none p-0 text-center relative h-screen w-full flex items-center justify-center"
+      >
+        <button
+          class="absolute top-4 right-4 btn btn-circle btn-ghost text-white/70 hover:text-white hover:bg-white/20 z-50 border-none"
+          onclick="closePhotoModal()"
+        >
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+        <img
+          id="viewerImage"
+          src=""
+          class="max-w-full max-h-[90vh] rounded-lg shadow-2xl object-contain mx-auto"
+          draggable="false"
+        />
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button onclick="closePhotoModal()">close</button>
+      </form>
+    </dialog>
+
+    <script src="/js/app.js"></script>
+  </body>
+</html>
